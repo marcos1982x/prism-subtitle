@@ -8,61 +8,64 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: transparent; /* 透明背景，給 Prism 疊在畫面上 */
+      background: transparent;
       overflow: hidden;
     }
-    #subtitle {
-      font-size: 32px;        /* 字體大小：不夠大可以改 34 / 36 */
-      font-weight: bold;      /* 加粗 */
-      color: #ffffff;         /* 白色字 */
-      text-align: left;       /* 左對齊 */
-      white-space: pre-wrap;  /* 保留換行 */
-      text-shadow: 0 0 4px rgba(0,0,0,0.9);
-      padding: 8px 16px;
+
+    /* 外框容器（黑色透明背景） */
+    #subtitle-box {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6); /* 黑色 60% 透明度 */
+      padding: 10px 16px;
       box-sizing: border-box;
+      position: relative;
+    }
+
+    /* 字幕文字 */
+    #subtitle {
+      font-size: 32px;
+      font-weight: bold;
+      color: #ffffff;
+      text-align: left;
+      white-space: pre-wrap;
+      text-shadow: 0 0 4px rgba(0,0,0,0.9);
+      line-height: 1.3;
     }
   </style>
 </head>
 <body>
-  <div id="subtitle"></div>
 
-  <script>
-    // 永遠抓最新版本的 raw 檔案
-    const RAW_URL = "https://gist.githubusercontent.com/marcos1982x/2256f9985eb31b67d91bc353948f49bc/raw/gistfile1.txt";
+  <!-- 黑框 + 字幕 -->
+  <div id="subtitle-box">
+    <div id="subtitle"></div>
+  </div>
 
-    const el = document.getElementById("subtitle");
-    let lastText = "";
+<script>
+  const RAW_URL = "https://gist.githubusercontent.com/marcos1982x/2256f9985eb31b67d91bc353948f49bc/raw/gistfile1.txt";
 
-    async function updateSubtitle() {
-      try {
-        const res = await fetch(RAW_URL + "?t=" + Date.now(), {
-          cache: "no-store"
-        });
-        if (!res.ok) {
-          return;
-        }
-        const text = (await res.text()).trim();
+  const el = document.getElementById("subtitle");
+  let lastText = "";
 
-        // 文字有變才更新，順便強制 Prism 重畫
-        if (text && text !== lastText) {
-          lastText = text;
-          el.innerHTML = text.replace(/\n/g, "<br>");
+  async function updateSubtitle() {
+    try {
+      const res = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) return;
 
-          // 小小晃動一下 opacity，逼 WebView 重繪
-          el.style.opacity = "0.99";
-          setTimeout(() => {
-            el.style.opacity = "1";
-          }, 50);
-        }
-      } catch (e) {
-        // 靜音錯誤，避免影響畫面
-        console.log(e);
+      const text = (await res.text()).trim();
+
+      if (text && text !== lastText) {
+        lastText = text;
+        el.innerHTML = text.replace(/\n/g, "<br>");
+
+        el.style.opacity = "0.99";
+        setTimeout(() => { el.style.opacity = "1"; }, 50);
       }
-    }
+    } catch (e) {}
+  }
 
-    // 一開始先抓一次，之後每 2 秒檢查一次
-    updateSubtitle();
-    setInterval(updateSubtitle, 2000);
-  </script>
+  updateSubtitle();
+  setInterval(updateSubtitle, 2000);
+</script>
+
 </body>
 </html>
