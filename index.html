@@ -4,40 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Subtitle</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      overflow: hidden;
-    }
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+  }
 
-    /* 黑色透明背景條 (全寬) */
-    #subtitle-box {
-      width: 100%;
-      background: rgba(0,0,0,0.6);
-      padding: 10px 16px;
-      box-sizing: border-box;
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+  }
 
-      /* ⭐ 這個讓內容靠右 ⭐ */
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    /* 字幕文字樣式 */
-    #subtitle {
-      font-size: 32px;
-      font-weight: bold;
-      color: #fff;
-      white-space: pre-wrap;
-      text-shadow: 0 0 4px rgba(0,0,0,0.9);
-      line-height: 1.3;
-
-      /* ⭐ 字型右對齊（保險用）⭐ */
-      text-align: right;
-      max-width: 90%;    /* 避免太寬不好看，可調整 */
-    }
-  </style>
+  #subtitle {
+    display: inline-block;
+    font-size: 42px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: left;
+    white-space: pre-wrap;      /* 保留換行 */
+    line-height: 1.15;          /* ★ 行距變緊，不會像多一行空白 */
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+  }
+</style>
 </head>
 <body>
 
