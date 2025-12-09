@@ -1,56 +1,99 @@
-<script>
-  const RAW_URL = "https://gist.githubusercontent.com/marcos1982x/2256f9985eb31b67d91bc353948f49bc/raw/gistfile1.txt";
-
-  const el = document.getElementById("subtitle");
-
-  let currentText = "";   // 已經顯示在畫面上的字幕
-  let pendingText = "";   // 候選的新字幕
-  let pendingCount = 0;   // 連續抓到候選字幕的次數
-  const STABLE_TIMES = 3; // 需要連續幾次一樣才更新（3 次 ≈ 6 秒）
-
-  async function updateSubtitle() {
-    try {
-      const res = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
-      if (!res.ok) return;
-
-      const text = (await res.text()).trim();
-      if (!text) return;
-
-      // 和現在畫面一樣 → 代表沒變，清掉候選狀態
-      if (text === currentText) {
-        pendingText = "";
-        pendingCount = 0;
-        return;
-      }
-
-      // 和候選字幕一樣 → 次數 +1
-      if (text === pendingText) {
-        pendingCount++;
-      } else {
-        // 第一次看到不同的內容 → 設成候選，計數從 1 開始
-        pendingText = text;
-        pendingCount = 1;
-      }
-
-      // 連續 STABLE_TIMES 次都拿到同一份新字幕 → 才真正更新畫面
-      if (pendingCount >= STABLE_TIMES) {
-        currentText = pendingText;
-        el.innerHTML = currentText.replace(/\n/g, "<br>");
-
-        // 小小晃動一下 opacity，逼 Prism 重畫
-        el.style.opacity = "0.99";
-        setTimeout(() => { el.style.opacity = "1"; }, 50);
-
-        // 重置候選狀態
-        pendingText = "";
-        pendingCount = 0;
-      }
-    } catch (e) {
-      console.log(e);
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Subtitle</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
     }
-  }
 
-  // 先抓一次，之後每 2 秒檢查一次
-  updateSubtitle();
-  setInterval(updateSubtitle, 2000);
-</script>
+    /* 黑色 60% 透明背景條 */
+    #subtitle-box {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);  /* 黑底 60% 透明 */
+      padding: 10px 16px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* 字幕文字樣式 */
+    #subtitle {
+      font-size: 32px;        /* 字體大小，可改 30 / 34 */
+      font-weight: bold;      /* 粗體 */
+      color: #ffffff;         /* 白字 */
+      text-align: left;       /* 左對齊 */
+      white-space: pre-wrap;  /* 保留換行 */
+      text-shadow: 0 0 4px rgba(0,0,0,0.9);
+      line-height: 1.3;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 黑框 + 字幕 -->
+  <div id="subtitle-box">
+    <div id="subtitle"></div>
+  </div>
+
+  <script>
+    const RAW_URL = "https://gist.githubusercontent.com/marcos1982x/2256f9985eb31b67d91bc353948f49bc/raw/gistfile1.txt";
+
+    const el = document.getElementById("subtitle");
+
+    let currentText = "";    // 現在畫面上的字幕
+    let candidateText = "";  // 候選的新字幕
+    let candidateHits = 0;   // 看到候選字幕的次數
+    const STABLE_TIMES = 3;  // 連續 3 次抓到同一個新內容才更新
+
+    async function updateSubtitle() {
+      try {
+        const res = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) return;
+
+        const text = (await res.text()).trim();
+        if (!text) return;
+
+        // 舊字幕 → 完全忽略，不動畫面、不重置候選
+        if (text === currentText) {
+          return;
+        }
+
+        // 跟目前的候選一樣 → 次數 +1
+        if (text === candidateText) {
+          candidateHits++;
+        } else {
+          // 新的內容第一次出現 → 設成候選，計數從 1 開始
+          candidateText = text;
+          candidateHits = 1;
+        }
+
+        // 當同一個新內容被看到 STABLE_TIMES 次 → 才更新畫面
+        if (candidateHits >= STABLE_TIMES) {
+          currentText = candidateText;
+          el.innerHTML = currentText.replace(/\n/g, "<br>");
+
+          // 逼 Prism 重畫一下
+          el.style.opacity = "0.99";
+          setTimeout(() => { el.style.opacity = "1"; }, 50);
+
+          // 重置候選狀態
+          candidateText = "";
+          candidateHits = 0;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    // 一開始先抓一次，之後每 2 秒檢查一次
+    updateSubtitle();
+    setInterval(updateSubtitle, 2000);
+  </script>
+
+</body>
+</html>
