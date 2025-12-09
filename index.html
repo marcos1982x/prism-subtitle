@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Subtitle</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent; /* 透明背景 */
+    }
+    #subtitle {
+      font-size: 48px;        /* 字體大小 */
+      font-weight: bold;      /* 加粗 */
+      color: #ffffff;         /* 白色字 */
+      text-align: left;       /* 左對齊 */
+      white-space: pre-wrap;  /* 保留換行 */
+      text-shadow: 0 0 4px rgba(0,0,0,0.8); /* 黑色光暈，提高直播可視性 */
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="subtitle"></div>
+
+  <script>
+    const RAW_URL = "https://gist.githubusercontent.com/marcos1982x/2256f9985eb31b67d91bc353948f49bc/raw/75bdb8f9d34e4d44e20867e261737cb2d943bb96/gistfile1.txt";
+
+    async function updateSubtitle() {
+      try {
+        // 加亂數強制刷新
+        const res = await fetch(RAW_URL + "?t=" + Date.now());
+        if (!res.ok) return;
+        const text = await res.text();
+        document.getElementById("subtitle").textContent = text.trim();
+      } catch (e) {}
+    }
+
+    updateSubtitle();                  
+    setInterval(updateSubtitle, 2000); 
+  </script>
+</body>
+</html>
