@@ -1,81 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Subtitle</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-  }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="0">
 
-  body {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
-      "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
-  }
-
-  #subtitle {
-    display: inline-block;
-    font-size: 42px;
-    font-weight: bold;
-    color: #ffffff;
-    text-align: left;
-    white-space: pre-wrap;      /* 保留換行 */
-    line-height: 1.15;          /* ★ 行距變緊，不會像多一行空白 */
-    padding: 8px 16px;
-    background: rgba(0, 0, 0, 0.6);
-    box-sizing: border-box;
-  }
-</style>
-</head>
-<body>
-
-  <div id="subtitle-box">
-    <div id="subtitle"></div>
-  </div>
-
-  <script>
-    const RAW_URL = "https://gist.githubusercontent.com/marcos1982x/2256f9985eb31b67d91bc353948f49bc/raw/gistfile1.txt";
-
-    const el = document.getElementById("subtitle");
-
-    let currentText = "";
-    let candidateText = "";
-    let candidateHits = 0;
-    const STABLE_TIMES = 3;
-
-    async function updateSubtitle() {
-      try {
-        const res = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) return;
-
-        const text = (await res.text()).trim();
-        if (!text) return;
-
-        if (text === currentText) return;
-
-        if (text === candidateText) candidateHits++;
-        else {
-          candidateText = text;
-          candidateHits = 1;
-        }
-
-        if (candidateHits >= STABLE_TIMES) {
-          currentText = candidateText;
-          el.innerHTML = currentText.replace(/\n/g, "<br>");
-
-          candidateText = "";
-          candidateHits = 0;
-        }
-
-      } catch (e) {}
+  <style>
+    body {
+      margin: 0;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.82);
+      color: #ffffff;
+      font-family: "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.25;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-radius: 10px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.35);
     }
-
-    updateSubtitle();
-    setInterval(updateSubtitle, 2000);
-  </scr
+  </style>
+</head>
