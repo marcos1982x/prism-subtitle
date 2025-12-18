@@ -1,27 +1,40 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="cache-control" content="no-cache">
-  <meta http-equiv="pragma" content="no-cache">
-  <meta http-equiv="expires" content="0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      margin: 0;
-      padding: 8px 12px;
-      background: rgba(0,0,0,0.82);
-      color: #ffffff;
-      font-size: 26px;
-      line-height: 1.35;
-      font-family: "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+    body { margin:0; background: transparent; }
+    #box{
+      display:inline-block;
+      padding:8px 12px;
+      background: rgba(0,0,0,.82);
+      color:#fff;
+      font: 700 26px/1.35 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
       white-space: pre-wrap;
+      word-break: break-word;
+      border-radius: 10px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
     }
   </style>
 </head>
 <body>
-469-(新品) 黑/白 $1188｜下播 $1250
-肩 / 胸 / 長（cm）
-韓 ADRESS 家｜雙口袋小香棉質毛呢鉛筆裙
+  <div id="box">載入中…</div>
+
+  <script>
+    const box = document.getElementById('box');
+    async function tick(){
+      try{
+        // 用 cache-bust 避免 GitHub / PRISM 快取
+        const url = 'subtitle.txt?t=' + Date.now();
+        const txt = await (await fetch(url, {cache:'no-store'})).text();
+        box.textContent = txt.trim() || ' ';
+      }catch(e){
+        // 失敗時不要閃爍
+      }
+    }
+    tick();
+    setInterval(tick, 800);
+  </script>
 </body>
 </html>
